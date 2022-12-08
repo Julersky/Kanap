@@ -11,8 +11,7 @@ const getDataFromApi = async () =>{
         return
       }else{
         const getProducts = () =>{
-          let dataFromLocalStorage = JSON.parse(localStorage.getItem('cart'))?? alert('Votre panier est vide!');
-          //Verifier qu'il y a quelque chose dans cart(localStorage)
+          let dataFromLocalStorage = JSON.parse(localStorage.getItem('cart'));
             
           let priceSum = 0;
           let totalQuantity = 0;
@@ -49,7 +48,7 @@ const getDataFromApi = async () =>{
                 </div>
                 <div class="cart__item__content__settings">
                   <div class="cart__item__content__settings__quantity">
-                    <p>Qté : ${product.productQuantity}</p>
+                    <p>Qté : </p>
                     <input type="number" class="itemQuantity" name="itemQuantity" min="1" max="100" value="${product.productQuantity}">
                   </div>
                   <div class="cart__item__content__settings__delete">
@@ -100,3 +99,5 @@ function deleteFromCart () {
 
 
 
+//addEventlistener on change
+// Quand on clique sur suppr demander une confirmation 
