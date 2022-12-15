@@ -45,6 +45,8 @@ const getDataFromApi = async () => {
             }
           }
 
+          //Creation des elements du cart(display)//
+
           let productInCart = `<article class="cart__item" data-id="${product.productId}" data-color="${product.productColor}">
               <div class="cart__item__img">
                 <img src="${product.productImg}" alt="${product.productAltText}">
@@ -93,6 +95,8 @@ const getDataFromApi = async () => {
 
 
 getDataFromApi();
+
+//Les fonctions permettant de modifier la quantité d'un produit, le supprimer et recalculer le prix total ainsi que le nombre de produits.//
 
 function deleteFromCart() {
   let deleteFromCartButton = document.getElementsByClassName('deleteItem');
@@ -220,3 +224,124 @@ function modifyQuantity() {
   }  
 }
 
+//Les fonctions pour le formulaire de confirmation (RegExp)//
+
+
+let confirmationForm = document.querySelector('.cart__order__form');
+
+confirmationForm.firstName.addEventListener('change', function(){
+  validFirstName(this);
+});
+
+confirmationForm.lastName.addEventListener('change', function(){
+  validLastName(this);
+});
+
+confirmationForm.address.addEventListener('change', function(){
+  validAdress(this);
+});
+
+confirmationForm.city.addEventListener('change', function(){
+  validCity(this);
+});
+
+confirmationForm.email.addEventListener('change', function(){
+  validEmail(this);
+});
+
+
+
+function validFirstName (FirstName){
+  let firstNameRegExp = new RegExp(
+    "^[A-Z][A-Za-z\é\è\ê\-]+$", "g"
+  );
+  let testFirstName = firstNameRegExp.test(FirstName.value);
+  let FirstNameMessageSelector = document.getElementById('firstNameErrorMsg');
+  if(!testFirstName){    
+    FirstNameMessageSelector.innerHTML = "Prénom invalide!";
+  }else{
+    FirstNameMessageSelector.innerHTML = "";
+  }
+
+}
+
+function validLastName (LastName){
+  let lastNameRegExp = new RegExp(
+    "^[A-Z][A-Za-z\é\è\ê\-]+$", "g"
+  );
+  let testLastName = lastNameRegExp.test(LastName.value);
+  let LastNameMessageSelector = document.getElementById('lastNameErrorMsg');
+  if(!testLastName){
+    LastNameMessageSelector.innerHTML = "Nom invalide!";
+  }else{
+    LastNameMessageSelector.innerHTML = "";
+  }
+
+}
+
+function validAdress (adress){
+  let adressRegExp = new RegExp(
+    "^[0-9]*) ?([a-zA-Z,\. ]*) ?([0-9]{5}) ?([a-zA-Z]*", "g"
+  );
+  let testAdress = adressRegExp.test(adress.value);
+  let adressMessageSelector = document.getElementById('addressErrorMsg');
+  if(!testAdress){    
+    adressMessageSelector.innerHTML = "Adresse invalide!";
+  }else{
+    adressMessageSelector.innerHTML = "";
+  }
+
+}
+
+function validCity (city){
+  let cityRegExp = new RegExp(
+    "^[A-Z][A-Za-z\é\è\ê\-]+$", "g"
+  );
+  let testCity = cityRegExp.test(city.value);
+  let cityMessageSelector = document.getElementById('cityErrorMsg');
+  if(!testCity){    
+    cityMessageSelector.innerHTML = "Ville invalide!";
+  }else{
+    cityMessageSelector.innerHTML = "";
+  }
+
+}
+
+function validEmail (email){
+  let emailRegExp = new RegExp(
+    "^[a-zA-Z0-9.-_]+[@]{1}[a-zA-Z0-9.-_]+[.]{1}[a-z]{2,10}$", "g"
+  );
+  let testEmail = emailRegExp.test(email.value);
+  let emailMessageSelector = document.getElementById('emailErrorMsg');
+  if(!testEmail){    
+    emailMessageSelector.innerHTML = "Adresse mail invalide!";
+  }else{
+    emailMessageSelector.innerHTML = "";
+  }
+
+
+}
+
+//Envoi du formulaire + commande au back//
+
+const btnOrder = document.querySelector('.cart__order__form');
+
+btnOrder.addEventListener('submit ', function(e){
+  e.preventDefault();
+
+  const contact = new FormData(this);  
+
+
+  fetch ('cart.js',{
+    method:'post',
+    body: contact
+  }).then(function (res) {
+    return res.text();
+  }).then(function (text){
+    console.log(text);
+  }).catch(function (error){
+    console.log('erreur');
+  })
+
+
+});
