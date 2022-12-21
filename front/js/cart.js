@@ -22,6 +22,10 @@ const getDataFromApi = async () => {
 
         cartItemsSelector.appendChild(errorText);
 
+        let cartOrderSelector = document.getElementsByClassName("cart__order");
+
+        cartOrderSelector[0].style.display = "none";
+
       } else {
 
         let priceSum = 0;
@@ -76,7 +80,7 @@ const getDataFromApi = async () => {
 
       }
 
- 
+
 
       deleteFromCart();
 
@@ -107,7 +111,7 @@ function deleteFromCart() {
 
       e.preventDefault();
 
-      let confirmation = confirm("Etes vous sur de vouloir supprimer ce produit ?");
+      let confirmation = confirm("Voulez-vous supprimer ce produit ?");
 
       if (confirmation) {
 
@@ -123,14 +127,32 @@ function deleteFromCart() {
 
             cart.splice(j, 1);
 
-            //deleteFromCartButton[i].remove();
+            articleSelector.remove();
 
             localStorage.setItem("cart", JSON.stringify(cart));
 
           }
 
         }
-        getDataFromApi();
+
+        if (cart == null || cart == undefined || cart.length == 0) {
+
+          //alert('Votre panier est vide!');
+          let cartItemsSelector = document.getElementById("cart__items");
+          let errorText = document.createElement("p");
+          //errorText.style.color = "red";
+          errorText.innerHTML = "Votre panier est vide !";
+          errorText.style.fontSize = '35px';
+          errorText.style.display = 'flex';
+          errorText.style.justifyContent = 'center';
+
+          cartItemsSelector.appendChild(errorText);
+
+          let cartOrderSelector = document.getElementsByClassName("cart__order");
+
+          cartOrderSelector[0].style.display = "none";
+
+        }
 
         calculateTotalProductInCart();
 
@@ -138,7 +160,7 @@ function deleteFromCart() {
 
       }
 
-    })
+    });
 
   }
 
@@ -194,6 +216,7 @@ function calculateTotalCartPrice() {
 }
 
 function modifyQuantity() {
+
   let quantitySelector = document.getElementsByClassName('itemQuantity');
 
 
@@ -202,26 +225,31 @@ function modifyQuantity() {
     let articleSelector = quantitySelector[i].parentNode.parentNode.parentNode.parentNode;
 
     let productId = articleSelector.getAttribute("data-id");
-  
+
     let productColor = articleSelector.getAttribute("data-color");
 
     quantitySelector[i].addEventListener('change', () => {
       let newQuantity = quantitySelector[i].value;
-      console.log(newQuantity, productId); 
+      console.log(newQuantity, productId);
       for (let j = 0; j < cart.length; j++) {
-        if(cart[j].productColor == productColor && cart[j].productId == productId){
-          cart[j].productQuantity = newQuantity;
-          localStorage.setItem("cart", JSON.stringify(cart));          
+        if (cart[j].productColor == productColor && cart[j].productId == productId) {
+          if (newQuantity > 0 && newQuantity <= 100) {
+            cart[j].productQuantity = newQuantity;
+            localStorage.setItem("cart", JSON.stringify(cart));
+          } else {
+            alert("Veuillez choisir une quantité valide comprise entre 1 et 100.")
+            quantitySelector[i].value = cart[j].productQuantity;
+          }
         }
-      } 
+      }
       calculateTotalProductInCart();
 
       calculateTotalCartPrice();
-   
+
 
     })
 
-  }  
+  }
 }
 
 //Les fonctions pour le formulaire de confirmation (RegExp)//
@@ -229,96 +257,110 @@ function modifyQuantity() {
 
 let confirmationForm = document.querySelector('.cart__order__form');
 
-confirmationForm.firstName.addEventListener('change', function(){
+confirmationForm.firstName.addEventListener('change', function () {
   validFirstName(this);
 });
 
-confirmationForm.lastName.addEventListener('change', function(){
+confirmationForm.lastName.addEventListener('change', function () {
   validLastName(this);
 });
 
-confirmationForm.address.addEventListener('change', function(){
+confirmationForm.address.addEventListener('change', function () {
   validAdress(this);
 });
 
-confirmationForm.city.addEventListener('change', function(){
+confirmationForm.city.addEventListener('change', function () {
   validCity(this);
 });
 
-confirmationForm.email.addEventListener('change', function(){
+confirmationForm.email.addEventListener('change', function () {
   validEmail(this);
 });
 
 
 
-function validFirstName (FirstName){
+function validFirstName(FirstName) {
+  let isvalidFirstName = false;
   let firstNameRegExp = new RegExp(
-    "^[A-Z][A-Za-z\é\è\ê\-]+$", "g"
+    "^[a-zA-Zàâäéèêëïîôöùûüç' ,.'-]{3,15}$"
   );
   let testFirstName = firstNameRegExp.test(FirstName.value);
   let FirstNameMessageSelector = document.getElementById('firstNameErrorMsg');
-  if(!testFirstName){    
-    FirstNameMessageSelector.innerHTML = "Prénom invalide!";
-  }else{
+  if (!testFirstName) {
+    FirstNameMessageSelector.innerHTML = "Prénom invalide! Veuillez spécifier un nom sans caractères numériques avec un longueur minimum de 3 caractères et au maximum 15 caractères.";
+  } else {
     FirstNameMessageSelector.innerHTML = "";
+    isvalidFirstName = true;
   }
-
+  return isvalidFirstName;
 }
 
-function validLastName (LastName){
+function validLastName(LastName) {
+  let isValidLastName = false;
   let lastNameRegExp = new RegExp(
-    "^[A-Z][A-Za-z\é\è\ê\-]+$", "g"
+    "^[a-zA-Zàâäéèêëïîôöùûüç' ,.'-]{3,15}$"
   );
   let testLastName = lastNameRegExp.test(LastName.value);
   let LastNameMessageSelector = document.getElementById('lastNameErrorMsg');
-  if(!testLastName){
-    LastNameMessageSelector.innerHTML = "Nom invalide!";
-  }else{
+  if (!testLastName) {
+    LastNameMessageSelector.innerHTML = "Nom invalide! Veuillez spécifier un nom sans caractères numériques avec un longueur minimum de 3 caractères et au maximum 15 caractères.";
+  } else {
     LastNameMessageSelector.innerHTML = "";
+    isValidLastName = true;
   }
+
+  return isValidLastName;
 
 }
 
-function validAdress (adress){
+function validAdress(adress) {
+  let isValidAdress = false;
   let adressRegExp = new RegExp(
-    "^[0-9]*) ?([a-zA-Z,\. ]*) ?([0-9]{5}) ?([a-zA-Z]*", "g"
+    "^[0-9]{1,3}[a-z]{0,3}[,. ]{1}[ ]{0,1}[-a-zA-Zàâäéèêëïîôöùûüç']+"
   );
   let testAdress = adressRegExp.test(adress.value);
   let adressMessageSelector = document.getElementById('addressErrorMsg');
-  if(!testAdress){    
-    adressMessageSelector.innerHTML = "Adresse invalide!";
-  }else{
+  if (!testAdress) {
+    adressMessageSelector.innerHTML = "Adresse invalide! Veuillez spécifier le numéro de la rue suivi des détails de l'adresse.";
+  } else {
     adressMessageSelector.innerHTML = "";
+    isValidAdress = true;
   }
+  return isValidAdress;
 
 }
 
-function validCity (city){
+function validCity(city) {
+  let isValidCity = false;
   let cityRegExp = new RegExp(
-    "^[A-Z][A-Za-z\é\è\ê\-]+$", "g"
+    "^[a-zA-Zàâäéèêëïîôöùûüç ,.'-]+$"
   );
   let testCity = cityRegExp.test(city.value);
   let cityMessageSelector = document.getElementById('cityErrorMsg');
-  if(!testCity){    
-    cityMessageSelector.innerHTML = "Ville invalide!";
-  }else{
+  if (!testCity) {
+    cityMessageSelector.innerHTML = "Ville invalide! Veuillez spécifier une ville sans caractères numériques ni caractères speciaux.";
+  } else {
     cityMessageSelector.innerHTML = "";
+    isValidCity = true;
   }
+  return isValidCity;
 
 }
 
-function validEmail (email){
+function validEmail(email) {
+  let isValidEmail = false;
   let emailRegExp = new RegExp(
-    "^[a-zA-Z0-9.-_]+[@]{1}[a-zA-Z0-9.-_]+[.]{1}[a-z]{2,10}$", "g"
+    "^[a-zA-Z0-9.-_]+[@]{1}[a-zA-Z0-9.-_]+[.]{1}[a-z]{2,10}$"
   );
   let testEmail = emailRegExp.test(email.value);
   let emailMessageSelector = document.getElementById('emailErrorMsg');
-  if(!testEmail){    
-    emailMessageSelector.innerHTML = "Adresse mail invalide!";
-  }else{
+  if (!testEmail) {
+    emailMessageSelector.innerHTML = "Adresse mail invalide! Veuillez fournir une adresse mail au format abc@example.com";
+  } else {
     emailMessageSelector.innerHTML = "";
+    isValidEmail = true;
   }
-
+  return isValidEmail;
 
 }
 
@@ -326,22 +368,75 @@ function validEmail (email){
 
 const btnOrder = document.querySelector('.cart__order__form');
 
-btnOrder.addEventListener('submit ', function(e){
+
+btnOrder.addEventListener('submit', function (e) {
+
   e.preventDefault();
 
-  const contact = new FormData(this);  
+  let confirmation = confirm("Voulez-vous valider votre panier?");
 
+  if(confirmation){
+    if (cart != null && cart != undefined && cart.length > 0) {
 
-  fetch ('cart.js',{
-    method:'post',
-    body: contact
-  }).then(function (res) {
-    return res.text();
-  }).then(function (text){
-    console.log(text);
-  }).catch(function (error){
-    console.log('erreur');
-  })
+      let isvalidFirstName = validFirstName(confirmationForm.firstName);
+      let isValidLastName = validLastName(confirmationForm.lastName);
+      let isValidAdress = validAdress(confirmationForm.address);
+      let isValidCity = validCity(confirmationForm.city);
+      let isValidEmail = validEmail(confirmationForm.email);
+  
+  
+      if (isvalidFirstName && isValidLastName && isValidAdress && isValidCity && isValidEmail) {
+  
+        let products = [];
+        for (let product of cart) {
+          products.push(product.productId);
+        }
+  
+        const orderData = {        
+          contact: {
+            firstName: confirmationForm.firstName.value,
+            lastName: confirmationForm.lastName.value,
+            address: confirmationForm.address.value,
+            city: confirmationForm.city.value,
+            email: confirmationForm.email.value
+          },
+          products: products
+        };
+  
+        
+       
+  
+        fetch("http://localhost:3000/api/products/order", {
+          method: 'POST',
+          body: JSON.stringify(orderData),
+          headers: {
+            "Content-Type":"application/json",
+            "Acces-Control-Allow-Origin":"*"
+          }
+        }).then(function (res) {
+          return res.json();
+        }).then(function (data) {
+          window.location.href =`confirmation.html?orderId=${data.orderId}`;
+          
+  
+        }).catch(function (error) {
+          console.log('erreur');
+        });   
+        
+  
+      } else {
+        alert("Un ou plusieurs champs du formulaire sont incorrect ou non fournis.")
+      }
+  
+    } else {
+      alert("Votre panier est vide.")
+    }
+  
+  }
+
+  
+
+  
 
 
 });

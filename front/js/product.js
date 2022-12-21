@@ -66,7 +66,6 @@ displayDataById();
 
 
 //Récuperer les informations fournies par le client et les envoyer a un objet//
-    // Creation d'une class
 
 
 
