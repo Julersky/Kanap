@@ -84,6 +84,7 @@ function addToCart(item) {
       alert("Veuillez choisir une quantité valide comprise entre 1 et 100.");
       return;
     }
+    
 
     //Création de l'objet new product avec les valeurs
     let newProduct = {
@@ -105,7 +106,21 @@ function addToCart(item) {
         cart[i].productColor == productColor
       ) {
         findProductInCart = true; //Indiquer la présence d'un produit identique dans le cart
-        cart[i].productQuantity = cart[i].productQuantity + productQuantity;
+        if(cart[i].productQuantity + productQuantity > 100 ){
+          let confirmation = confirm(`Vous disposez de ${cart[i].productQuantity} articles dans votre panier. Le maximum autorisé est de 100 articles par produit. Voulez-vous ajouter le maximum d'articles autorisés?`);
+          
+          if(confirmation){
+            cart[i].productQuantity = 100;
+          }else{
+            return;
+          }
+          
+
+        }else{
+          cart[i].productQuantity = cart[i].productQuantity += productQuantity;
+          
+          // cart[i].productQuantity += productQuantity;
+        }
       }
     }
 

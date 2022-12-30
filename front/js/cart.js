@@ -41,35 +41,70 @@ const getDataFromApi = async () => {
               product.productAltText = item.altTxt;
               totalQuantity += product.productQuantity;
             }
-          }
+          };
 
-          //Creation des elements du cart(display)//
 
-          let productInCart = `<article class="cart__item" data-id="${product.productId}" data-color="${product.productColor}">
-              <div class="cart__item__img">
-                <img src="${product.productImg}" alt="${product.productAltText}">
-              </div>
-              <div class="cart__item__content">
-                <div class="cart__item__content__description">
-                  <h2>${product.productName}</h2>
-                  <p>${product.productColor}</p>
-                  <p>${product.productPrice},00 €</p>
-                </div>
-                <div class="cart__item__content__settings">
-                  <div class="cart__item__content__settings__quantity">
-                    <p>Qté : </p>
-                    <input type="number" class="itemQuantity" name="itemQuantity" min="1" max="100" value="${product.productQuantity}">
-                  </div>
-                  <div class="cart__item__content__settings__delete">
-                    <p class="deleteItem">Supprimer</p>
-                  </div>
-                </div>
-              </div>
-            </article>`;
-          productsToDipslay += productInCart;
+            let articleSelector = document.createElement("article");
+            articleSelector.setAttribute("class", "cart__item");
+            articleSelector.setAttribute("data-id", product.productId);
+            articleSelector.setAttribute("data-color", product.productColor);
+   
+            let divImg = document.createElement("div");
+            divImg.setAttribute("class","cart__item__img");
+            let img = document.createElement("img");
+            img.setAttribute("src", product.productImg);
+            img.setAttribute("alt", product.productAltText);
+
+            let divContent = document.createElement("div");
+            divContent.setAttribute("class","cart__item__content");
+            let divDesc = document.createElement("div");
+            divDesc.setAttribute("class","cart__item__content__description");           
+            let hName = document.createElement("h2");
+            hName.innerHTML = product.productName;
+            let pColor = document.createElement("p");
+            pColor.innerHTML = product.productColor;
+            let pPrice = document.createElement("p");
+            pPrice.innerHTML = product.productPrice + ",00 €";
+
+            let divSettings = document.createElement("div");
+            divSettings.setAttribute("class","cart__item__content__settings");
+            let divSettingsQuantity = document.createElement("div");
+            divSettingsQuantity.setAttribute("class","cart__item__content__settings__quantity");
+            let pQuantity = document.createElement("p");
+            pQuantity.innerHTML = "Qté : ";
+
+            let inputQuantity = document.createElement("input");    
+            inputQuantity.setAttribute("type","number");        
+            inputQuantity.setAttribute("class","itemQuantity");       
+            inputQuantity.setAttribute("name","itemQuantity");       
+            inputQuantity.setAttribute("min","1");       
+            inputQuantity.setAttribute("max","100");       
+            inputQuantity.setAttribute("value",product.productQuantity);
+
+            let divSettingsDelete = document.createElement("div");
+            divSettingsDelete.setAttribute("class","cart__item__content__settings__delete");
+            let pDelete = document.createElement("p");
+            pDelete.setAttribute("class","deleteItem");
+            pDelete.innerHTML = "Supprimer";
+
+            
+
+            cartProductsSelector.insertAdjacentElement("afterbegin",articleSelector);
+            articleSelector.insertAdjacentElement("afterbegin",divImg);
+            articleSelector.insertAdjacentElement("beforeend",divContent);
+            divContent.insertAdjacentElement("afterbegin",divDesc);
+            divContent.insertAdjacentElement("beforeend",divSettings);
+            divSettings.insertAdjacentElement("afterbegin",divSettingsQuantity);
+            divSettings.insertAdjacentElement("beforeend",divSettingsDelete);
+            divSettingsDelete.insertAdjacentElement("afterbegin",pDelete);
+            divSettingsQuantity.insertAdjacentElement("afterbegin",pQuantity);
+            divSettingsQuantity.insertAdjacentElement("beforeend",inputQuantity);
+
+            divImg.appendChild(img);
+            divDesc.appendChild(hName);
+            divDesc.appendChild(pColor);
+            divDesc.appendChild(pPrice);
         }
-
-        cartProductsSelector.innerHTML = productsToDipslay;
       }
 
       deleteFromCart();
@@ -193,7 +228,7 @@ function modifyQuantity() {
     let productColor = articleSelector.getAttribute("data-color");
 
     quantitySelector[i].addEventListener("change", () => {//Des que la quantité est modifiée et que l'id de l'élément = un id dans le cart on change la quantité dans le cart
-      let newQuantity = quantitySelector[i].value;
+      let newQuantity = parseInt(quantitySelector[i].value);
       for (let j = 0; j < cart.length; j++) {
         if (
           cart[j].productColor == productColor &&
@@ -245,12 +280,12 @@ confirmationForm.email.addEventListener("change", function () {
 
 function validFirstName(FirstName) { //RegExp 
   let isvalidFirstName = false;
-  let firstNameRegExp = new RegExp("^[a-zA-Zàâäéèêëïîôöùûüç' ,.'-]{3,15}$");
+  let firstNameRegExp = new RegExp("^[a-zA-Zàâäéèêëïîôöùûüç'\S,.'-]{3,15}$");
   let testFirstName = firstNameRegExp.test(FirstName.value);
   let FirstNameMessageSelector = document.getElementById("firstNameErrorMsg");
   if (!testFirstName) {
     FirstNameMessageSelector.innerHTML =
-      "Prénom invalide! Veuillez spécifier un nom sans caractères numériques avec un longueur minimum de 3 caractères et au maximum 15 caractères.";
+      "Prénom invalide! Veuillez spécifier un nom sans caractères numériques, sans espaces avec un longueur minimum de 3 caractères et au maximum 15 caractères.Pour les prénoms composés utilisez le \"-\".";
   } else {
     FirstNameMessageSelector.innerHTML = "";
     isvalidFirstName = true;
@@ -260,12 +295,12 @@ function validFirstName(FirstName) { //RegExp
 
 function validLastName(LastName) {
   let isValidLastName = false;
-  let lastNameRegExp = new RegExp("^[a-zA-Zàâäéèêëïîôöùûüç' ,.'-]{3,15}$");
+  let lastNameRegExp = new RegExp("^[a-zA-Zàâäéèêëïîôöùûüç'\S,.'-]{3,15}$");
   let testLastName = lastNameRegExp.test(LastName.value);
   let LastNameMessageSelector = document.getElementById("lastNameErrorMsg");
   if (!testLastName) {
     LastNameMessageSelector.innerHTML =
-      "Nom invalide! Veuillez spécifier un nom sans caractères numériques avec un longueur minimum de 3 caractères et au maximum 15 caractères.";
+      "Nom invalide! Veuillez spécifier un nom sans caractères numériques, sans espaces avec un longueur minimum de 3 caractères et au maximum 15 caractères.Pour les noms composés utilisez le \"-\". ";
   } else {
     LastNameMessageSelector.innerHTML = "";
     isValidLastName = true;
@@ -292,7 +327,7 @@ function validAdress(adress) {
 
 function validCity(city) {
   let isValidCity = false;
-  let cityRegExp = new RegExp("^[a-zA-Zàâäéèêëïîôöùûüç ,.'-]+$");
+  let cityRegExp = new RegExp("^[a-zA-Zàâäéèêëïîôöùûüç,.'-\S]+$");
   let testCity = cityRegExp.test(city.value);
   let cityMessageSelector = document.getElementById("cityErrorMsg");
   if (!testCity) {
@@ -308,7 +343,7 @@ function validCity(city) {
 function validEmail(email) {
   let isValidEmail = false;
   let emailRegExp = new RegExp(
-    "^[a-zA-Z0-9.-_]+[@]{1}[a-zA-Z0-9.-_]+[.]{1}[a-z]{2,10}$"
+    "^[a-zA-Z0-9._%+-]+@[a-zA-Z0-9._-]+\.[a-zA-Z]{2,4}$" 
   );
   let testEmail = emailRegExp.test(email.value);
   let emailMessageSelector = document.getElementById("emailErrorMsg");
