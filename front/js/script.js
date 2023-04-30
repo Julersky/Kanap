@@ -2,11 +2,6 @@ const displayProductData = async () => {
   await fetch("http://localhost:3000/api/products/")
   // Récupération de la BDD avec fetch
     .then((res) => res.json()) // Transformer en JSON les données
-    .catch((error) => {//Message d'erreur si la transformation n'a pas pu etre faite
-      alert(
-        "Nous rencontrons un problème avec notre serveur. Veuillez réessayer plus tard. Si le problème persiste veuillez nous contacter"
-      );
-    })
     .then((products) => {
       const itemsSelector = document.getElementById("items");// Navigation dans le DOM pour indiquer l'emplacement où on veut creer des éléments
       for (let item of products) {//Pour chaque élément de la BDD on créer des éléments HTML
